@@ -10,6 +10,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "commander": "^2.18.0",
-    "download": "^7.1.0"
+    "download": "^7.1.0",
+    "opn": "^5.4.0",
+    "readline-sync": "^1.4.9",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "uuid": "^3.3.2"
   }
 }
