@@ -1,0 +1,15 @@
+{
+  "name": "vaadin-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/vaadin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "commander": "^2.18.0",
+    "download": "^7.1.0"
+  }
+}
