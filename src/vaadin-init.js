@@ -2,26 +2,26 @@
 
 'use strict';
 
-const download = require('download');
 const fs = require('fs');
 const request = require('request-promise');
 const opn = require('opn');
 const uuid = require('uuid/v4');
 const os = require('os');
 const readline = require('readline-sync');
+const decompress = require('decompress');
 
 const proKeyFile = os.homedir() + "/.vaadin/proKey";
 class ProKey {
 
   static async getProKey() {
     if (fs.existsSync(proKeyFile)) {
-      return fs.readFileSync(proKeyFile);
+      return JSON.parse(fs.readFileSync(proKeyFile));
     } else {
       const proKey = await this.openBrowserAndWaitForKey();
       if (proKey) {
         fs.writeFileSync(proKeyFile, proKey);
       }
-      return proKey;
+      return JSON.parse(proKey);
     }
   }
 
@@ -69,19 +69,38 @@ class ProKey {
 
 const program = require('commander');
 program
-  .arguments('<name>')
-  .action(async function (name) {
-    const proKey = await ProKey.getProKey(name);
+  .arguments('<projectName>')
+  .action(async function (projectName) {
+    const proKey = await ProKey.getProKey();
 
     const fs = require('fs');
-    if (fs.existsSync(name)) {
-      console.error("Directory '" + name + "' already exists");
+    if (fs.existsSync(projectName)) {
+      console.error("Directory '" + projectName + "' already exists");
       return;
     }
 
-    console.log("Creating app '" + name + "'");
-    const zipName = name + '.zip';
-    await download("https://artur.app.fi/start/project-base.zip", name, { extract: true });
+    console.log("Creating app '" + projectName + "'");
+
+    const options = {
+      qs: {
+        projectName: projectName
+      },
+      encoding: null,
+      gzip: true,
+      auth: {
+        user: proKey.username,
+        pass: proKey.proKey,
+        sendImmediately: false
+      }
+    };
+    await request.
+      get("http://localhost:8080/starters/latest/simple-ui", options, function (error, response, body) {
+        if (response && response.statusCode == 200) {
+          fs.writeFileSync('temp.zip', body);
+          decompress('temp.zip', projectName);
+        }
+      }
+      );
   });
 
 program.parse(process.argv);
