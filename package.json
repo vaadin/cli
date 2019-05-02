@@ -11,8 +11,10 @@
   "dependencies": {
     "commander": "^2.18.0",
     "decompress": "^4.2.0",
+    "enquirer": "^1.0.3",
     "opn": "^5.4.0",
     "prompt-choices": "^5.0.0",
+    "prompt-radio": "^1.2.1",
     "readline-sync": "^1.4.9",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",

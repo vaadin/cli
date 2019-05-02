@@ -9,6 +9,9 @@ const uuid = require('uuid/v4');
 const os = require('os');
 const readline = require('readline-sync');
 const decompress = require('decompress');
+const choices = require('prompt-choices');
+const Enquirer = require('enquirer');
+const wrap = require('ansi-wrap');
 
 const proKeyFile = os.homedir() + "/.vaadin/proKey";
 class ProKey {
@@ -71,7 +74,25 @@ const program = require('commander');
 program
   .arguments('<projectName>')
   .action(async function (projectName) {
-    const proKey = await ProKey.getProKey();
+    var enquirer = new Enquirer();
+    enquirer.register('radio', require('prompt-radio'));
+    var starterType = new choices([
+//      'Customized project using Spring (opens a browser for customization)',
+      'Empty project using Spring Boot',
+      'Empty project using CDI',
+//      'Bakery example application using Spring'
+    ]);
+    enquirer.question({
+      name: 'starter',
+      message: 'Please select the starter to use',
+      type: 'radio',
+      choices: starterType,
+      options: {
+        pointer: wrap("38;5;45", 39, "}>")
+      },
+      default: 'Customized project using Spring (opens a browser for customization)'
+    });
+//    await enquirer.ask('starter');
 
     const fs = require('fs');
     if (fs.existsSync(projectName)) {
@@ -83,21 +104,24 @@ program
 
     const options = {
       qs: {
-        projectName: projectName
+        appName: projectName,
+        groupId: "com.example.app"
       },
       encoding: null,
-      gzip: true,
-      auth: {
+      gzip: true
+/*      auth: {
         user: proKey.username,
         pass: proKey.proKey,
         sendImmediately: false
-      }
+      }*/
     };
     await request.
-      get("http://localhost:8080/starters/latest/simple-ui", options, function (error, response, body) {
+      get("https://vaadin.com/vaadincom/start-service/latest/project-base", options, function (error, response, body) {
         if (response && response.statusCode == 200) {
           fs.writeFileSync('temp.zip', body);
           decompress('temp.zip', projectName);
+          fs.unlinkSync('temp.zip');
+          console.log("Project '" + projectName + "' created");
         }
       }
       );
