@@ -1,5 +1,5 @@
 {
-  "name": "vaadin-cli",
+  "name": "@vaadin/cli",
   "version": "1.0.0",
   "description": "",
   "main": "src/vaadin.js",
