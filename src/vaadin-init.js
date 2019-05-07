@@ -116,7 +116,7 @@ program
       }*/
     };
     await request.
-      get("https://vaadin.com/vaadincom/start-service/latest/project-base", options, function (error, response, body) {
+      post("https://vaadin.com/vaadincom/start-service/latest/project-base", options, function (error, response, body) {
         if (response && response.statusCode == 200) {
           fs.writeFileSync('temp.zip', body);
           decompress('temp.zip', projectName);
