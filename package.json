@@ -1,12 +1,13 @@
 {
   "name": "@vaadin/cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A CLI for creating Vaadin applications",
   "keywords": [
     "Vaadin",
     "cli",
     "web application"
-  ],  "main": "src/vaadin.js",
+  ],
+  "main": "src/vaadin.js",
   "bin": {
     "vaadin": "src/vaadin.js"
   },
