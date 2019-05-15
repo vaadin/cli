@@ -1,21 +1,20 @@
 #!/usr/bin/env node
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const request = require('request-promise');
-const opn = require('opn');
-const uuid = require('uuid/v4');
-const os = require('os');
-const readline = require('readline-sync');
-const decompress = require('decompress');
-const choices = require('prompt-choices');
-const Enquirer = require('enquirer');
-const wrap = require('ansi-wrap');
+const fs = require("fs");
+const request = require("request-promise");
+const opn = require("opn");
+const uuid = require("uuid/v4");
+const os = require("os");
+const readline = require("readline-sync");
+const decompress = require("decompress");
+const choices = require("prompt-choices");
+const Enquirer = require("enquirer");
+const wrap = require("ansi-wrap");
 
 const proKeyFile = os.homedir() + "/.vaadin/proKey";
 class ProKey {
-
   static async getProKey() {
     if (fs.existsSync(proKeyFile)) {
       return JSON.parse(fs.readFileSync(proKeyFile));
@@ -31,17 +30,21 @@ class ProKey {
   static async openBrowserAndWaitForKey() {
     const uniqueId = uuid();
 
-    const url = 'https://vaadin.com/pro/validate-license';
-    const loginUrl = url + '?connect=' + uniqueId;
+    const url = "https://vaadin.com/pro/validate-license";
+    const loginUrl = url + "?connect=" + uniqueId;
     const pollUrl = url + "/connect/" + uniqueId;
 
     try {
-      console.log('The operation requires you to authenticate to vaadin.com.');
-      readline.question('Press enter to open your system browser to log in...');
+      console.log("The operation requires you to authenticate to vaadin.com.");
+      readline.question("Press enter to open your system browser to log in...");
       opn(loginUrl, { wait: false });
     } catch (e) {
-      console.error('Error opening system browser to validate license. Please open '
-        + loginUrl + " manually", e);
+      console.error(
+        "Error opening system browser to validate license. Please open " +
+          loginUrl +
+          " manually",
+        e
+      );
     }
 
     try {
@@ -70,63 +73,62 @@ class ProKey {
   }
 }
 
-const program = require('commander');
-program
-  .arguments('<projectName>')
-  .action(async function (projectName) {
-    var enquirer = new Enquirer();
-    enquirer.register('radio', require('prompt-radio'));
-    var starterType = new choices([
-//      'Customized project using Spring (opens a browser for customization)',
-      'Empty project using Spring Boot',
-      'Empty project using CDI',
-//      'Bakery example application using Spring'
-    ]);
-    enquirer.question({
-      name: 'starter',
-      message: 'Please select the starter to use',
-      type: 'radio',
-      choices: starterType,
-      options: {
-        pointer: wrap("38;5;45", 39, "}>")
-      },
-      default: 'Customized project using Spring (opens a browser for customization)'
-    });
-//    await enquirer.ask('starter');
+const program = require("commander");
+program.arguments("<projectName>").action(async function(projectName) {
+  var enquirer = new Enquirer();
+  enquirer.register("radio", require("prompt-radio"));
+  var starterType = new choices([
+    //      'Customized project using Spring (opens a browser for customization)',
+    "Empty project using Spring Boot",
+    "Empty project using CDI"
+    //      'Bakery example application using Spring'
+  ]);
+  enquirer.question({
+    name: "starter",
+    message: "Please select the starter to use",
+    type: "radio",
+    choices: starterType,
+    options: {
+      pointer: wrap("38;5;45", 39, "}>")
+    },
+    default:
+      "Customized project using Spring (opens a browser for customization)"
+  });
+  //    await enquirer.ask('starter');
 
-    const fs = require('fs');
-    if (fs.existsSync(projectName)) {
-      console.error("Directory '" + projectName + "' already exists");
-      return;
-    }
+  const fs = require("fs");
+  if (fs.existsSync(projectName)) {
+    console.error("Directory '" + projectName + "' already exists");
+    return;
+  }
 
-    console.log("Creating app '" + projectName + "'");
+  console.log("Creating app '" + projectName + "'");
 
-    const options = {
-      qs: {
-        appName: projectName,
-        groupId: "com.example.app"
-      },
-      encoding: null,
-      gzip: true
-/*      auth: {
+  const options = {
+    qs: {
+      appName: projectName,
+      groupId: "com.example.app"
+    },
+    encoding: null,
+    gzip: true
+    /*      auth: {
         user: proKey.username,
         pass: proKey.proKey,
         sendImmediately: false
       }*/
-    };
-    await request.
-      post("https://vaadin.com/vaadincom/start-service/latest/project-base", options, function (error, response, body) {
-        if (response && response.statusCode == 200) {
-          fs.writeFileSync('temp.zip', body);
-          decompress('temp.zip', projectName);
-          fs.unlinkSync('temp.zip');
-          console.log("Project '" + projectName + "' created");
-        }
+  };
+  await request.post(
+    "https://vaadin.com/vaadincom/start-service/latest/project-base",
+    options,
+    function(error, response, body) {
+      if (response && response.statusCode == 200) {
+        fs.writeFileSync("temp.zip", body);
+        decompress("temp.zip", projectName);
+        fs.unlinkSync("temp.zip");
+        console.log("Project '" + projectName + "' created");
       }
-      );
-  });
+    }
+  );
+});
 
 program.parse(process.argv);
-
-

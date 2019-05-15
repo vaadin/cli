@@ -1,16 +1,12 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
-var program = require('commander');
+var program = require("commander");
 
-process.title = 'vaadin-cli';
+process.title = "vaadin-cli";
 
 program
-  .version(require('../package.json').version)
-  .command(
-    'init <name>',
-    'Create a new project'
-  );
-
+  .version(require("../package.json").version)
+  .command("init <name>", "Create a new project");
 
 program.parse(process.argv);
