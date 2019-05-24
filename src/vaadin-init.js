@@ -74,61 +74,75 @@ class ProKey {
 }
 
 const program = require("commander");
-program.arguments("<projectName>").action(async function(projectName) {
-  var enquirer = new Enquirer();
-  enquirer.register("radio", require("prompt-radio"));
-  var starterType = new choices([
-    //      'Customized project using Spring (opens a browser for customization)',
-    "Empty project using Spring Boot",
-    "Empty project using CDI"
-    //      'Bakery example application using Spring'
-  ]);
-  enquirer.question({
-    name: "starter",
-    message: "Please select the starter to use",
-    type: "radio",
-    choices: starterType,
-    options: {
-      pointer: wrap("38;5;45", 39, "}>")
-    },
-    default:
-      "Customized project using Spring (opens a browser for customization)"
-  });
-  //    await enquirer.ask('starter');
+program
+  .option("--pre", "Use the latest pre release (if available)")
+  .option(
+    "--tech [tech]",
+    "Use the specified tech stack [spring, javaee, osgi, plain-java]",
+    "spring"
+  )
+  .arguments("<projectName>")
+  .action(async function(projectName) {
+    var enquirer = new Enquirer();
+    enquirer.register("radio", require("prompt-radio"));
+    var starterType = new choices([
+      //      'Customized project using Spring (opens a browser for customization)',
+      "Empty project using Spring Boot",
+      "Empty project using CDI"
+      //      'Bakery example application using Spring'
+    ]);
+    enquirer.question({
+      name: "starter",
+      message: "Please select the starter to use",
+      type: "radio",
+      choices: starterType,
+      options: {
+        pointer: wrap("38;5;45", 39, "}>")
+      },
+      default:
+        "Customized project using Spring (opens a browser for customization)"
+    });
+    //    await enquirer.ask('starter');
+    const techStack = program.tech;
+    const version = program.pre ? "pre-release" : "latest";
+    const fs = require("fs");
+    if (fs.existsSync(projectName)) {
+      console.error("Directory '" + projectName + "' already exists");
+      return;
+    }
 
-  const fs = require("fs");
-  if (fs.existsSync(projectName)) {
-    console.error("Directory '" + projectName + "' already exists");
-    return;
-  }
+    console.log(
+      `Creating application '${projectName}' using ${techStack}${
+        program.pre ? " (Vaadin pre-release)" : ""
+      }`
+    );
 
-  console.log("Creating app '" + projectName + "'");
-
-  const options = {
-    qs: {
-      appName: projectName,
-      groupId: "com.example.app"
-    },
-    encoding: null,
-    gzip: true
-    /*      auth: {
+    const options = {
+      qs: {
+        appName: projectName,
+        groupId: "com.example.app",
+        techStack: techStack
+      },
+      encoding: null,
+      gzip: true
+      /*      auth: {
         user: proKey.username,
         pass: proKey.proKey,
         sendImmediately: false
       }*/
-  };
-  await request.post(
-    "https://vaadin.com/vaadincom/start-service/latest/project-base",
-    options,
-    function(error, response, body) {
-      if (response && response.statusCode == 200) {
-        fs.writeFileSync("temp.zip", body);
-        decompress("temp.zip", projectName);
-        fs.unlinkSync("temp.zip");
-        console.log("Project '" + projectName + "' created");
+    };
+    await request.post(
+      `https://vaadin.com/vaadincom/start-service/${version}/project-base`,
+      options,
+      function(error, response, body) {
+        if (response && response.statusCode == 200) {
+          fs.writeFileSync("temp.zip", body);
+          decompress("temp.zip", projectName);
+          fs.unlinkSync("temp.zip");
+          console.log("Project '" + projectName + "' created");
+        }
       }
-    }
-  );
-});
+    );
+  });
 
 program.parse(process.argv);
