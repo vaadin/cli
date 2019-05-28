@@ -131,7 +131,7 @@ program
         sendImmediately: false
       }*/
     };
-    await request.post(
+    await request.get(
       `https://vaadin.com/vaadincom/start-service/${version}/project-base`,
       options,
       function(error, response, body) {
