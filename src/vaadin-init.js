@@ -2,6 +2,8 @@
 
 "use strict";
 
+const enableHotswap  = require("./hotswap");
+
 const fs = require("fs");
 const request = require("request-promise");
 const opn = require("opn");
@@ -76,6 +78,7 @@ class ProKey {
 const program = require("commander");
 program
   .option("--pre", "Use the latest pre release (if available)")
+  .option("--hotswap", "Enable hotswapping using Trava JDK")
   .option(
     "--tech [tech]",
     "Use the specified tech stack [spring, javaee, osgi, plain-java]",
@@ -134,12 +137,17 @@ program
     await request.get(
       `https://vaadin.com/vaadincom/start-service/${version}/project-base`,
       options,
-      function(error, response, body) {
+      async function(error, response, body) {
         if (response && response.statusCode == 200) {
           fs.writeFileSync("temp.zip", body);
-          decompress("temp.zip", projectName);
+          await decompress("temp.zip", projectName);
           fs.unlinkSync("temp.zip");
           console.log("Project '" + projectName + "' created");
+          process.chdir(projectName);
+
+          if (program.hotswap) {
+            enableHotswap();
+          }
         }
       }
     );

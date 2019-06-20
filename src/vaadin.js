@@ -7,6 +7,8 @@ process.title = "vaadin-cli";
 
 program
   .version(require("../package.json").version)
-  .command("init <name>", "Create a new project");
+  .command("init <name>", "Create a new project")
+  .command("hotswap", "Enable hotswapping in the current project (using Trava JDK)")
+  ;
 
 program.parse(process.argv);
