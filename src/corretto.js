@@ -28,7 +28,7 @@ const downloadJdkIfNeeded = async function() {
   if (os.type == "Darwin") {
     javaHome += "/Contents/Home";
   }
-  console.log("JAVA_HOME=" + javaHome + " mvn");
+  console.log("JAVA_HOME=" + javaHome);
 };
 
 module.exports = downloadJdkIfNeeded;
