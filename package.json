@@ -27,7 +27,7 @@
     "replace-in-file": "^4.1.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "targz": "^1.0.1",
+    "tar": "^4.4.10",
     "uuid": "^3.3.2"
   }
 }

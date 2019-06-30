@@ -1,10 +1,8 @@
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
-const request = require("request");
-const targz = require("targz");
 const replaceInFile = require("replace-in-file");
-
+const dl = require("./download.js");
 const urls = {
   Linux:
     "https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.1%2B8/java11-openjdk-dcevm-linux.tar.gz",
@@ -14,36 +12,6 @@ const urls = {
     "https://github.com/TravaOpenJDK/trava-jdk-11-dcevm/releases/download/dcevm-11.0.1%2B8/java11-openjdk-dcevm-windows.zip"
 };
 
-const download = async function(url, dest) {
-  const file = fs.createWriteStream(dest);
-  const sendReq = request.get(url);
-  var res, rej;
-  const ret = new Promise(function(resolve, reject) {
-    res = resolve;
-    rej = reject;
-  });
-  sendReq.on("response", response => {
-    sendReq.pipe(file);
-  });
-
-  file.on("finish", () =>
-    file.close(() => {
-      res();
-    })
-  );
-
-  sendReq.on("error", err => {
-    fs.unlinkSync(dest);
-    rej(err);
-  });
-
-  file.on("error", err => {
-    fs.unlinkSync(dest);
-    rej(err.message);
-  });
-
-  return ret;
-};
 
 const patchProject = async () => {
   const options = {
@@ -70,42 +38,13 @@ const enableHotswap = async function() {
     console.error("Unsupported operating system: " + os.type());
     return;
   }
-
   const filename = decodeURIComponent(path.basename(downloadUrl));
-  const version = decodeURIComponent(path.basename(path.dirname(downloadUrl)));
-  const vaadinInHome = os.homedir() + "/.vaadin";
-  const jdkHome = vaadinInHome + "/trava-jdk/" + version;
-  const downloadLocation =
-    vaadinInHome + "/downloads/" + version + "/" + filename;
-  if (!fs.existsSync(downloadLocation)) {
-    fs.mkdirSync(path.dirname(downloadLocation), { recursive: true });
-    console.log("Downloading " + downloadUrl + " to " + downloadLocation);
-    const error = await download(downloadUrl, downloadLocation);
-    if (error) {
-      console.error("Failed to download file: " + error);
-      return;
-    } else {
-      console.log("Downloaded " + downloadUrl + " to " + downloadLocation);
-    }
-  }
+  const nameAndVersion = decodeURIComponent(path.basename(path.dirname(downloadUrl)));
+  const targetFile = nameAndVersion + "/" + filename;
+  await dl.downloadIfNeeded(downloadUrl, targetFile);
 
-  if (!fs.existsSync(jdkHome)) {
-    console.log("Unpacking Trava JDK to " + path.dirname(jdkHome) + "...");
-    fs.mkdirSync(path.dirname(jdkHome), { recursive: true });
-    targz.decompress(
-      {
-        src: downloadLocation,
-        dest: path.dirname(jdkHome)
-      },
-      function(err) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Unpacked Trava JDK");
-        }
-      }
-    );
-  }
+  const jdkHome = dl.vaadinInHome + "/jdk/" + nameAndVersion;
+  await dl.extractIfNeeded(targetFile, jdkHome);
   await patchProject();
   console.log("To use hotswapping, run your project as");
   var javaHome = jdkHome;
