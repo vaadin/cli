@@ -22,6 +22,7 @@ const patchProject = async () => {
   const results = await replaceInFile(options);
   const hotswapProperties = "src/main/resources/hotswap-agent.properties";
   if (!fs.existsSync(hotswapProperties)) {
+    fs.mkdirSync(path.dirname(hotswapProperties), { recursive: true });
     const fd = fs.openSync(hotswapProperties, "w");
     fs.writeSync(
       fd,
