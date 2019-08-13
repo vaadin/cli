@@ -137,7 +137,7 @@ program
       function(error, response, body) {
         if (response && response.statusCode == 200) {
           fs.writeFileSync("temp.zip", body);
-          decompress("temp.zip", projectName);
+          decompress("temp.zip", projectName, { strip: 1 } );
           fs.unlinkSync("temp.zip");
           console.log("Project '" + projectName + "' created");
         }
