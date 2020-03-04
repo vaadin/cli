@@ -75,6 +75,7 @@ class ProKey {
 
 const program = require("commander");
 program
+  .option("--latest", "Use the latest release. By default uses the latest LTS release")
   .option("--pre", "Use the latest pre release (if available)")
   .option(
     "--tech [tech]",
@@ -104,7 +105,7 @@ program
     });
     //    await enquirer.ask('starter');
     const techStack = program.tech;
-    const version = program.pre ? "pre-release" : "latest";
+    const version = program.pre ? "pre-release" : program.latest ? "latest" : "lts";
     const fs = require("fs");
     if (fs.existsSync(projectName)) {
       console.error("Directory '" + projectName + "' already exists");
@@ -112,9 +113,7 @@ program
     }
 
     console.log(
-      `Creating application '${projectName}' using ${techStack}${
-        program.pre ? " (Vaadin pre-release)" : ""
-      }`
+      `Creating application '${projectName}' using ${techStack} (${version})`
     );
 
     const options = {
