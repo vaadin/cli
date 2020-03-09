@@ -84,26 +84,7 @@ program
   )
   .arguments("<projectName>")
   .action(async function(projectName) {
-    var enquirer = new Enquirer();
-    enquirer.register("radio", require("prompt-radio"));
-    var starterType = new choices([
-      //      'Customized project using Spring (opens a browser for customization)',
-      "Empty project using Spring Boot",
-      "Empty project using CDI"
-      //      'Bakery example application using Spring'
-    ]);
-    enquirer.question({
-      name: "starter",
-      message: "Please select the starter to use",
-      type: "radio",
-      choices: starterType,
-      options: {
-        pointer: wrap("38;5;45", 39, "}>")
-      },
-      default:
-        "Customized project using Spring (opens a browser for customization)"
-    });
-    //    await enquirer.ask('starter');
+
     const techStack = program.tech;
     const version = program.pre ? "pre-release" : program.latest ? "latest" : "lts";
     const fs = require("fs");
