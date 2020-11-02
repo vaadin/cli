@@ -65,7 +65,7 @@ class ProKey {
         if (response && response.statusCode == 200) {
           data = body;
         }
-      }).catch(e => {
+      }).catch((e) => {
         // Server returns 404 if the login process has not completed
       });
     }
@@ -75,7 +75,10 @@ class ProKey {
 
 const program = require("commander");
 program
-  .option("--latest", "Use the latest release. By default uses the latest LTS release")
+  .option(
+    "--latest",
+    "Use the latest release. By default uses the latest LTS release"
+  )
   .option("--pre", "Use the latest pre release (if available)")
   .option(
     "--tech [tech]",
@@ -83,10 +86,13 @@ program
     "spring"
   )
   .arguments("<projectName>")
-  .action(async function(projectName) {
-
+  .action(async function (projectName) {
     const techStack = program.tech;
-    const version = program.pre ? "pre-release" : program.latest ? "latest" : "lts";
+    const version = program.pre
+      ? "pre-release"
+      : program.latest
+      ? "latest"
+      : "lts";
     const fs = require("fs");
     if (fs.existsSync(projectName)) {
       console.error("Directory '" + projectName + "' already exists");
@@ -101,10 +107,10 @@ program
       qs: {
         appName: projectName,
         groupId: "com.example.app",
-        techStack: techStack
+        techStack: techStack,
       },
       encoding: null,
-      gzip: true
+      gzip: true,
       /*      auth: {
         user: proKey.username,
         pass: proKey.proKey,
@@ -114,10 +120,10 @@ program
     await request.get(
       `https://vaadin.com/vaadincom/start-service/${version}/project-base`,
       options,
-      function(error, response, body) {
+      function (error, response, body) {
         if (response && response.statusCode == 200) {
           fs.writeFileSync("temp.zip", body);
-          decompress("temp.zip", projectName, { strip: 1 } );
+          decompress("temp.zip", projectName, { strip: 1 });
           fs.unlinkSync("temp.zip");
           console.log("Project '" + projectName + "' created");
         }
