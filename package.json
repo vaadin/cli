@@ -26,6 +26,7 @@
     "readline-sync": "^1.4.9",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
+    "simple-git": "^2.21.0",
     "uuid": "^3.3.2"
   }
 }

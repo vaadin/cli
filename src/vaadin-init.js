@@ -12,6 +12,8 @@ const decompress = require("decompress");
 const choices = require("prompt-choices");
 const Enquirer = require("enquirer");
 const wrap = require("ansi-wrap");
+const program = require("commander");
+const simpleGit = require("simple-git");
 
 const proKeyFile = os.homedir() + "/.vaadin/proKey";
 class ProKey {
@@ -73,13 +75,16 @@ class ProKey {
   }
 }
 
-const program = require("commander");
 program
   .option(
     "--latest",
     "Use the latest release. By default uses the latest LTS release"
   )
   .option("--pre", "Use the latest pre release (if available)")
+  .option(
+    "--git",
+    "Initialize a Git repository for the project and commit the initial files"
+  )
   .option(
     "--tech [tech]",
     "Use the specified tech stack [spring, javaee, osgi, plain-java]",
@@ -88,6 +93,7 @@ program
   .arguments("<projectName>")
   .action(async function (projectName) {
     const techStack = program.tech;
+    const git = !!program.git;
     const version = program.pre
       ? "pre-release"
       : program.latest
@@ -120,12 +126,21 @@ program
     await request.get(
       `https://vaadin.com/vaadincom/start-service/${version}/project-base`,
       options,
-      function (error, response, body) {
+      async function (error, response, body) {
         if (response && response.statusCode == 200) {
           fs.writeFileSync("temp.zip", body);
-          decompress("temp.zip", projectName, { strip: 1 });
+          await decompress("temp.zip", projectName, { strip: 1 });
           fs.unlinkSync("temp.zip");
           console.log("Project '" + projectName + "' created");
+          if (git) {
+            console.log("Creating Git repository and initial commit");
+            process.chdir(projectName);
+
+            require("simple-git")()
+              .init()
+              .add("./*")
+              .commit("Generated project");
+          }
         }
       }
     );
