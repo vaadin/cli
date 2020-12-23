@@ -25,15 +25,22 @@ program
   .arguments("<projectName>")
   .action(async function (projectName) {
     const git = !!program.git;
-    const preset = program.preset
-      ? program.preset
-      : program.pre
-      ? "prerelease"
-      : program.latest
-      ? "latest"
-      : program.fusion
-      ? "fusion"
-      : "lts";
+    let preset = "lts";
+
+    if (program.preset) {
+      preset = program.preset;
+    } else if (program.pre) {
+      if (program.fusion) {
+        preset = "fusion-prerelease";
+      } else {
+        preset = "prerelease";
+      }
+    } else if (program.latest) {
+      preset = "latest";
+    } else if (program.fusion) {
+      preset = "fusion";
+    }
+
     if (fs.existsSync(projectName)) {
       console.error("Directory '" + projectName + "' already exists");
       return;
