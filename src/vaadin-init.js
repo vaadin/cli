@@ -8,37 +8,40 @@ const decompress = require("decompress");
 const program = require("commander");
 
 program
+  .option("--fusion", "Create a project with TypeScript and LitElement views")
+  .option("--empty", "Create a project with no menu and one empty view")
   .option(
     "--latest",
     "Use the latest release. By default uses the latest LTS release"
-  )
-  .option(
-    "--fusion",
-    "Create a Fusion based project with TypeScript and LitElement"
   )
   .option("--pre", "Use the latest pre release (if available)")
   .option(
     "--git",
     "Initialize a Git repository for the project and commit the initial files"
   )
-  .option("--preset <preset>", "Use the given preset")
+  .option(
+    "--preset <preset>",
+    "Use the given preset you happen to know that exists"
+  )
   .arguments("<projectName>")
   .action(async function (projectName) {
     const git = !!program.git;
-    let preset = "lts";
+    let preset = "default";
 
     if (program.preset) {
       preset = program.preset;
-    } else if (program.pre) {
-      if (program.fusion) {
-        preset = "fusion-prerelease";
-      } else {
-        preset = "prerelease";
-      }
+    } else if (program.empty) {
+      preset = "empty";
+    }
+
+    if (program.fusion) {
+      preset += "&preset=partial-typescript";
+    }
+
+    if (program.pre) {
+      preset += "&preset=partial-prerelease";
     } else if (program.latest) {
-      preset = "latest";
-    } else if (program.fusion) {
-      preset = "fusion";
+      preset += "&preset=partial-latest";
     }
 
     if (fs.existsSync(projectName)) {
@@ -46,7 +49,7 @@ program
       return;
     }
 
-    console.log(`Creating application '${projectName}' (${preset})`);
+    console.log(`Creating application '${projectName}'`);
 
     const options = {
       encoding: null,
