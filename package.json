@@ -19,7 +19,7 @@
   "dependencies": {
     "commander": "^2.18.0",
     "decompress": "^4.2.1",
-    "enquirer": "^1.0.3",
+    "enquirer": "^2.3.6",
     "opn": "^5.4.0",
     "prompt-choices": "^5.0.0",
     "prompt-radio": "^1.2.1",
