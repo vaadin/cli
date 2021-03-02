@@ -20,12 +20,11 @@
     "commander": "^2.18.0",
     "decompress": "^4.2.1",
     "enquirer": "^2.3.6",
+    "node-fetch": "^2.6.1",
     "opn": "^5.4.0",
     "prompt-choices": "^5.0.0",
     "prompt-radio": "^1.2.1",
     "readline-sync": "^1.4.9",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.2",
     "simple-git": "^2.21.0",
     "uuid": "^3.3.2"
   }
