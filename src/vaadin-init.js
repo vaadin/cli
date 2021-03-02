@@ -3,9 +3,9 @@
 "use strict";
 
 const fs = require("fs");
-const request = require("request-promise");
 const decompress = require("decompress");
 const program = require("commander");
+const fetch = require("node-fetch");
 
 program
   .option("--fusion", "Create a project with TypeScript and LitElement views")
@@ -51,47 +51,47 @@ program
 
     console.log(`Creating application '${projectName}'`);
 
-    const options = {
-      encoding: null,
-      gzip: true,
-    };
-    await request
-      .get(
+    try {
+      const response = await fetch(
         `https://start.vaadin.com/dl?preset=${preset}&projectName=${projectName}`,
-        options,
-        async function (_error, response, body) {
-          if (response && response.statusCode == 200) {
-            fs.writeFileSync("temp.zip", body);
-            try {
-              await decompress("temp.zip", ".", {
-                // workaround for https://github.com/kevva/decompress/issues/46
-                filter: (file) => !file.path.endsWith("/"),
-              });
-            } catch (e) {
-              console.error(e);
-              return;
-            }
-            fs.unlinkSync("temp.zip");
-            console.log("Project '" + projectName + "' created");
-            if (git) {
-              console.log("Creating Git repository and initial commit");
-              process.chdir(projectName);
-
-              require("simple-git")()
-                .init()
-                .add("./*")
-                .commit("Generated project");
-            }
-          }
+        {
+          headers: {
+            method: "GET",
+            "Accept-Encoding": "gzip",
+          },
         }
-      )
-      .catch((e) => {
-        if (e.statusCode == 404) {
+      );
+      if (!response.ok) {
+        if (response.status == 404) {
           console.error("Preset not found");
         } else {
-          console.error("Unable to create project: " + e.statusCode);
+          console.error("Unable to create project: " + response.status);
         }
-      });
+        return;
+      }
+
+      const body = await response.buffer();
+      fs.writeFileSync("temp.zip", body);
+      try {
+        await decompress("temp.zip", ".", {
+          // workaround for https://github.com/kevva/decompress/issues/46
+          filter: (file) => !file.path.endsWith("/"),
+        });
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      fs.unlinkSync("temp.zip");
+      console.log("Project '" + projectName + "' created");
+      if (git) {
+        console.log("Creating Git repository and initial commit");
+        process.chdir(projectName);
+
+        require("simple-git")().init().add("./*").commit("Generated project");
+      }
+    } catch (e) {
+      console.error("Unable to create project: " + e);
+    }
   });
 
 program.parse(process.argv);
