@@ -15,19 +15,18 @@ async function run() {
     },
     {
       type: 'input',
-      name: 'dsTechnicalName',
-      message: `Enter a short, technical name for your design system (this will be used for your folder and site title)`,
-      default: (answers) => answers.dsName.toLowerCase().replace(/\s/g, '-'),
+      name: 'docsFolderName',
+      message: `Provide a short technical name for the documentation web site project folder`,
+      default: (answers) => answers.dsName.toLowerCase().replace(/\s/g, '-') + '-docs',
     },
   ];
 
   const config = await inquirer.prompt(questions);
 
-  const docsName = `${config.dsTechnicalName}-docs`;
-  const docsPath = path.resolve(process.cwd(), docsName);
+  const docsPath = path.resolve(process.cwd(), config.docsFolderName);
 
   console.log(`Cloning documentation project into ${docsPath}...`);
-  execSync(`git clone https://github.com/vaadin/docs.git ${docsName}`, {
+  execSync(`git clone https://github.com/vaadin/docs.git ${config.docsFolderName}`, {
     cwd: process.cwd(),
     stdio: 'inherit',
   });
@@ -45,8 +44,8 @@ async function run() {
   console.log(`
 Okay, we’re all done!
 
-Start up the design system documentation project in development mode with:
-- cd ${docsName}
+Start up the design system documentation web site project in development mode with:
+- cd ${config.docsFolderName}
 - npm run dspublisher:start`);
 }
 
