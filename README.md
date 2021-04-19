@@ -12,7 +12,7 @@ Once installed, create a project using
 vaadin init my-project
 ```
 
-To create a design system documentation project (Vaadin Prime subscription only):
+To create a design system documentation project (Vaadin Prime subscription required):
 
 ```sh
 vaadin ds-init
