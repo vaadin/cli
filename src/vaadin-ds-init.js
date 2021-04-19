@@ -26,7 +26,7 @@ async function run() {
   const docsPath = path.resolve(process.cwd(), config.docsFolderName);
 
   console.log(`Cloning documentation project into ${docsPath}...`);
-  execSync(`git clone https://github.com/vaadin/docs.git ${config.docsFolderName}`, {
+  execSync(`git clone --depth=1 --single-branch --branch latest https://github.com/vaadin/docs.git ${config.docsFolderName}`, {
     cwd: process.cwd(),
     stdio: 'inherit',
   });
