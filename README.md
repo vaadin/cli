@@ -15,5 +15,5 @@ vaadin init my-project
 To create a design system documentation project (Vaadin Prime subscription required):
 
 ```sh
-vaadin ds-init
+vaadin dsp-init
 ```

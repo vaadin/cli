@@ -8,6 +8,6 @@ process.title = "vaadin-cli";
 program
   .version(require("../package.json").version)
   .command("init <name>", "Create a new project")
-  .command("ds-init", "Create a new design system documentation project");
+  .command("dsp-init", "Create a new design system documentation project");
 
 program.parse(process.argv);
