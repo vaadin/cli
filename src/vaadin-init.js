@@ -6,7 +6,6 @@ const fs = require("fs");
 const decompress = require("decompress");
 const program = require("commander");
 const fetch = require("node-fetch");
-const version = require("project-version");
 
 program
   .option("--fusion", "Create a project with TypeScript and LitElement views")
@@ -57,7 +56,7 @@ program
         `https://start.vaadin.com/dl?preset=${preset}&projectName=${projectName}`,
         {
           headers: {
-            "User-Agent": `Vaadin CLI / ${version}`,
+            "User-Agent": `Vaadin CLI`,
             method: "GET",
             "Accept-Encoding": "gzip",
           },
