@@ -8,7 +8,8 @@ const program = require("commander");
 const fetch = require("node-fetch");
 
 program
-  .option("--fusion", "Create a project with TypeScript and LitElement views")
+  .option("--hilla", "Create a project with TypeScript and LitElement views")
+  .option("--fusion", "Deprecated. Use --hilla instead")
   .option("--empty", "Create a project with no menu and one empty view")
   .option(
     "--latest",
@@ -34,7 +35,10 @@ program
       preset = "empty";
     }
 
-    if (program.fusion) {
+    if (program.hilla) {
+      preset += "&preset=partial-typescript";
+      preset += "&preset=partial-prerelease";
+    } else if (program.fusion) {
       preset += "&preset=partial-typescript";
     }
 
