@@ -33,12 +33,11 @@ program
       preset = program.preset;
     } else if (program.empty) {
       preset = "empty";
+    } else if (program.hilla) {
+      preset = "hilla";
     }
 
-    if (program.hilla) {
-      preset += "&preset=partial-typescript";
-      preset += "&preset=partial-prerelease";
-    } else if (program.fusion) {
+    if (program.fusion) {
       preset += "&preset=partial-typescript";
     }
 
