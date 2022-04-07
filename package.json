@@ -17,7 +17,7 @@
   "author": "Vaadin",
   "license": "Apache-2.0",
   "dependencies": {
-    "commander": "^2.20.3",
+    "commander": "^9.1.0",
     "decompress": "^4.2.1",
     "inquirer": "^8.0.0",
     "node-fetch": "^2.6.1",
