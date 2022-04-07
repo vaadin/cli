@@ -27,27 +27,28 @@ program
   )
   .arguments("<projectName>")
   .action(async function (projectName) {
-    const git = !!program.git;
+    const options = program.opts();
+    const git = !!options.git;
     let preset = "default";
 
-    if (program.preset) {
-      preset = program.preset;
-    } else if (program.empty) {
+    if (options.preset) {
+      preset = options.preset;
+    } else if (options.empty) {
       preset = "empty";
-    } else if (program.hilla) {
+    } else if (options.hilla) {
       preset = "hilla";
     }
 
-    if (program.fusion) {
+    if (options.fusion) {
       preset += "&preset=partial-typescript";
     }
-    if (program.auth) {
+    if (options.auth) {
       preset += "&preset=partial-auth";
     }
 
-    if (program.pre) {
+    if (options.pre) {
       preset += "&preset=partial-prerelease";
-    } else if (program.latest) {
+    } else if (options.latest) {
       preset += "&preset=partial-latest";
     }
 
