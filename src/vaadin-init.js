@@ -16,6 +16,7 @@ program
     "Use the latest release. By default uses the latest LTS release"
   )
   .option("--pre", "Use the latest pre release (if available)")
+  .option("--auth", "Add authentication support to the application")
   .option(
     "--git",
     "Initialize a Git repository for the project and commit the initial files"
@@ -39,6 +40,9 @@ program
 
     if (program.fusion) {
       preset += "&preset=partial-typescript";
+    }
+    if (program.auth) {
+      preset += "&preset=partial-auth";
     }
 
     if (program.pre) {
