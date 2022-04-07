@@ -21,6 +21,6 @@
     "decompress": "^4.2.1",
     "inquirer": "^8.0.0",
     "node-fetch": "^2.6.1",
-    "simple-git": "^2.21.0"
+    "simple-git": "^3.5.0"
   }
 }
