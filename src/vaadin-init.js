@@ -17,6 +17,7 @@ program
   )
   .option("--pre", "Use the latest pre release (if available)")
   .option("--auth", "Add authentication support to the application")
+  .option("--push", "Add experimental push support to Hilla applications")
   .option(
     "--git",
     "Initialize a Git repository for the project and commit the initial files"
@@ -37,6 +38,9 @@ program
       preset = "empty";
     } else if (options.hilla) {
       preset = "hilla";
+      if (options.push) {
+        preset += "&preset=partial-push"
+      }
     }
 
     if (options.fusion) {
