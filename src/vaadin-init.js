@@ -34,13 +34,17 @@ program
 
     if (options.preset) {
       preset = options.preset;
+    } else if (options.hilla) {
+      if (options.empty) {
+        preset = "hilla-empty";
+      } else {
+        preset = "hilla";
+      }
+      if (options.push) {
+        preset += "&preset=partial-push";
+      }
     } else if (options.empty) {
       preset = "empty";
-    } else if (options.hilla) {
-      preset = "hilla";
-      if (options.push) {
-        preset += "&preset=partial-push"
-      }
     }
 
     if (options.fusion) {
