@@ -16,6 +16,7 @@ program
     "Use the latest release. By default uses the latest LTS release"
   )
   .option("--pre", "Use the latest pre release (if available)")
+  .option("--next", "Use the pre release for the next major version (if available)")
   .option("--auth", "Add authentication support to the application")
   .option("--push", "Add experimental push support to Hilla applications")
   .option(
@@ -56,6 +57,8 @@ program
 
     if (options.pre) {
       preset += "&preset=partial-prerelease";
+    } else if (options.next) {
+      preset += "&preset=partial-nextprerelease";
     } else if (options.latest) {
       preset += "&preset=partial-latest";
     }
