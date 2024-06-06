@@ -1,15 +1,14 @@
 {
-  "name": "@vaadin/cli",
-  "version": "2.9.0",
+  "name": "create-vaadin",
+  "version": "3.0.0",
   "description": "A CLI for creating Vaadin applications",
   "keywords": [
     "Vaadin",
     "cli",
     "web application"
   ],
-  "main": "src/vaadin.js",
   "bin": {
-    "vaadin": "src/vaadin.js"
+    "create-vaadin": "src/vaadin-init.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
