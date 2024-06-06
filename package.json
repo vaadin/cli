@@ -1,6 +1,7 @@
 {
   "name": "create-vaadin",
   "version": "3.0.0",
+  "type": "module",
   "description": "A CLI for creating Vaadin applications",
   "keywords": [
     "Vaadin",
@@ -16,10 +17,13 @@
   "author": "Vaadin",
   "license": "Apache-2.0",
   "dependencies": {
-    "commander": "^9.1.0",
+    "commander": "^12.1.0",
     "decompress": "^4.2.1",
-    "inquirer": "^8.0.0",
-    "node-fetch": "^2.6.1",
-    "simple-git": "^3.5.0"
+    "inquirer": "^9.2.23",
+    "node-fetch": "^3.3.2",
+    "simple-git": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/decompress": "^4.2.7"
   }
 }

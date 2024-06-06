@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 "use strict";
-
-const fs = require("fs");
-const decompress = require("decompress");
-const program = require("commander");
-const fetch = require("node-fetch");
+import { program } from "commander";
+import fs from "fs";
+import decompress from "decompress";
+import fetch from "node-fetch";
 
 program
   .option("--flow", "Add Flow (Java) example views")
@@ -85,8 +84,8 @@ program
         return;
       }
 
-      const body = await response.buffer();
-      fs.writeFileSync("temp.zip", body);
+      const body = await response.arrayBuffer();
+      fs.writeFileSync("temp.zip", new Uint8Array(body));
       try {
         await decompress("temp.zip", ".", {
           // workaround for https://github.com/kevva/decompress/issues/46
