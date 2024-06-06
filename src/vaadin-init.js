@@ -8,17 +8,13 @@ const program = require("commander");
 const fetch = require("node-fetch");
 
 program
-  .option("--hilla", "Create a project with TypeScript and LitElement views")
-  .option("--fusion", "Deprecated. Use --hilla instead")
-  .option("--empty", "Create a project with no menu and one empty view")
-  .option(
-    "--latest",
-    "Use the latest release. By default uses the latest LTS release"
-  )
+  .option("--flow", "Add Flow (Java) example views")
+  .option("--hilla", "Add Hilla (React + TypeScript) example views")
+  .option("--auth", "Add login/logout and access control")
+  .option("--db", "Add a database to the project")
+  .option("--kubernetes", "Include a Kubernetes configuration")
+  .option("--docker", "Include a Dockerfile")
   .option("--pre", "Use the latest pre release (if available)")
-  .option("--next", "Use the pre release for the next major version (if available)")
-  .option("--auth", "Add authentication support to the application")
-  .option("--push", "Add experimental push support to Hilla applications")
   .option(
     "--git",
     "Initialize a Git repository for the project and commit the initial files"
@@ -31,36 +27,35 @@ program
   .action(async function (projectName) {
     const options = program.opts();
     const git = !!options.git;
-    let preset = "default";
+    let preset = "base";
 
     if (options.preset) {
       preset = options.preset;
-    } else if (options.hilla) {
-      if (options.empty) {
-        preset = "hilla-empty";
-      } else {
-        preset = "hilla";
-      }
-      if (options.push) {
-        preset += "&preset=partial-push";
-      }
-    } else if (options.empty) {
-      preset = "empty";
     }
 
-    if (options.fusion) {
-      preset += "&preset=partial-typescript";
+    if (options.flow) {
+      preset += "&preset=partial-flow-example-views";
     }
+    if (options.hilla) {
+      preset += "&preset=partial-hilla-example-views";
+    }
+
     if (options.auth) {
       preset += "&preset=partial-auth";
     }
 
+    if (options.db) {
+      preset += "&preset=partial-db";
+    }
+
+    if (options.kubernetes) {
+      preset += "&preset=partial-kubernetes";
+    } else if (options.docker) {
+      preset += "&preset=partial-docker";
+    }
+
     if (options.pre) {
       preset += "&preset=partial-prerelease";
-    } else if (options.next) {
-      preset += "&preset=partial-nextprerelease";
-    } else if (options.latest) {
-      preset += "&preset=partial-latest";
     }
 
     if (fs.existsSync(projectName)) {
