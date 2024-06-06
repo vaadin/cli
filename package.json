@@ -7,9 +7,8 @@
     "cli",
     "web application"
   ],
-  "main": "src/vaadin.js",
   "bin": {
-    "vaadin": "src/vaadin.js"
+    "create-vaadin": "src/vaadin-init.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
