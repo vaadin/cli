@@ -17,11 +17,12 @@ function sanitizePath(path) {
   return path?.trim().replace(/[^a-zA-Z0-9-_]/g, "");
 }
 
+function exists(path) {
+    return fs.existsSync(path);
+}
+
 function isEmptyFolder(path) {
-  if (!fs.existsSync(path)) {
-    return false;
-  }
-  return fs.readdirSync(path).length === 0;
+  return exists(path) && fs.readdirSync(path).length === 0;
 }
 async function downloadProject(folder, options) {
   const { projectName } = options;
@@ -44,7 +45,7 @@ async function downloadProject(folder, options) {
     presets.push(`partial-${feature}`);
   }
 
-  if (fs.existsSync(folder)) {
+  if (exists(folder)) {
     if (isEmptyFolder(folder)) {
       fs.rmdirSync(folder);
     } else if (options.overwrite === "yes") {
@@ -122,11 +123,10 @@ try {
         initial: "my-vaadin-app",
         onState: (state) => {
           folder = sanitizePath(state.value);
-          console.log("Folder", folder);
         },
       },
       {
-        type: () => (!isEmptyFolder(folder) ? "select" : null),
+        type: () => (exists(folder) && !isEmptyFolder(folder) ? "select" : null),
         name: "overwrite",
         message: () => `Folder ${folder} already exists.`,
         choices: [
