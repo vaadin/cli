@@ -1,4 +1,5 @@
-import { program } from "commander";
+#!/usr/bin/env node
+
 import fs from "fs";
 import decompress from "decompress";
 import fetch from "node-fetch";
