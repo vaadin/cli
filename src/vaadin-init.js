@@ -16,6 +16,7 @@ function deleteFolder(folder) {
 function sanitizePath(path) {
   return path?.trim().replace(/[^a-zA-Z0-9-_]/g, "");
 }
+
 function isEmptyFolder(path) {
   if (!fs.existsSync(path)) {
     return false;
@@ -35,9 +36,7 @@ async function downloadProject(folder, options) {
   }
 
   for (const feature of options.features) {
-    if (feature === "git") {
-      continue;
-    } else if (feature === "pre") {
+    if (feature === "pre") {
       presets.push("partial-prerelease");
       continue;
     }
@@ -45,10 +44,10 @@ async function downloadProject(folder, options) {
     presets.push(`partial-${feature}`);
   }
 
-  const git = !!options.features.git;
-
   if (fs.existsSync(folder)) {
-    if (options.overwrite === "yes") {
+    if (isEmptyFolder(folder)) {
+      fs.rmdirSync(folder);
+    } else if (options.overwrite === "yes") {
       deleteFolder(folder);
     } else {
       console.error("Folder " + folder + " already exists");
@@ -81,9 +80,13 @@ async function downloadProject(folder, options) {
     const body = await response.arrayBuffer();
     fs.writeFileSync("temp.zip", new Uint8Array(body));
     try {
-      await decompress("temp.zip", ".", {
+      await decompress("temp.zip", folder, {
+        strip: 1,
         // workaround for https://github.com/kevva/decompress/issues/46
-        filter: (file) => !file.path.endsWith("/"),
+        filter: (file) =>
+          file.type !== "directory" &&
+          !file.path.endsWith(path.sep) &&
+          file.data.length !== 0,
       });
     } catch (e) {
       console.error(e);
@@ -94,21 +97,13 @@ async function downloadProject(folder, options) {
     console.log("Project '" + projectName + "' created");
     console.log("");
     console.log(
-      `To run your project, open the ${projectName} folder in your IDE and launch the Application class`
+      `To run your project, open the ${folder} folder in your IDE and launch the Application class`
     );
     console.log("");
     console.log("You can also run from the terminal using");
-    console.log("- cd " + projectName);
+    console.log("- cd " + folder);
     console.log("- mvn");
     console.log("");
-    console.log(":");
-
-    if (git) {
-      console.log("Creating Git repository and initial commit");
-      process.chdir(projectName);
-
-      require("simple-git")().init().add("./*").commit("Generated project");
-    }
   } catch (e) {
     console.error("Unable to create project: " + e);
   }
@@ -173,11 +168,6 @@ try {
           { title: "Include JPA support", value: "db" },
           { title: "Kubernetes configuration", value: "kubernetes" },
           { title: "Dockerfile", value: "docker" },
-          {
-            title:
-              "Initialize a Git repository for the project and commit the initial files",
-            value: "git",
-          },
           { title: "Use pre release", value: "pre" },
         ],
       },
