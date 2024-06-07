@@ -1,17 +1,28 @@
 #!/usr/bin/env node
 
 import fs from "fs";
+import path from "path";
 import decompress from "decompress";
 import fetch from "node-fetch";
 import prompts from "prompts";
 
+function deleteFolder(folder) {
+  for (const file of fs.readdirSync(folder)) {
+    const fullpath = path.resolve(folder, file);
+    fs.rmSync(fullpath, { recursive: true, force: true });
+  }
+}
+
 function sanitizePath(path) {
-  return path?.trim().replace("/", "");
+  return path?.trim().replace(/[^a-zA-Z0-9-_]/g, "");
 }
 function isEmptyFolder(path) {
+  if (!fs.existsSync(path)) {
+    return false;
+  }
   return fs.readdirSync(path).length === 0;
 }
-async function downloadProject(options) {
+async function downloadProject(folder, options) {
   const { projectName } = options;
   const presets = ["base"];
   if (options.exampleViews === "flow") {
@@ -36,9 +47,13 @@ async function downloadProject(options) {
 
   const git = !!options.features.git;
 
-  if (fs.existsSync(projectName)) {
-    console.error("Directory '" + projectName + "' already exists");
-    return;
+  if (fs.existsSync(folder)) {
+    if (options.overwrite === "yes") {
+      deleteFolder(folder);
+    } else {
+      console.error("Folder " + folder + " already exists");
+      return;
+    }
   }
 
   const preset = presets.map((p) => `preset=${p}`).join("&");
@@ -78,7 +93,9 @@ async function downloadProject(options) {
     console.log("");
     console.log("Project '" + projectName + "' created");
     console.log("");
-    console.log(`To run your project, open the ${projectName} folder in your IDE and launch the Application class`);
+    console.log(
+      `To run your project, open the ${projectName} folder in your IDE and launch the Application class`
+    );
     console.log("");
     console.log("You can also run from the terminal using");
     console.log("- cd " + projectName);
@@ -100,7 +117,7 @@ let result;
 let folder;
 
 try {
-  const argProjectName = sanitizePath(process.argv.slice(2)?.[0]);
+  const argProjectName = process.argv.slice(2)?.[0];
   result = await prompts(
     [
       {
@@ -114,13 +131,12 @@ try {
         },
       },
       {
-        type: () => null && 
-          fs.existsSync(folder) && !isEmptyFolder(folder) ? "select" : null,
+        type: () => (!isEmptyFolder(folder) ? "select" : null),
         name: "overwrite",
         message: () => `Folder ${folder} already exists.`,
         choices: [
           { title: "Cancel", value: "no" },
-          { title: "Remove old project and create new", value: "yes" },
+          { title: "Remove old project and create a new", value: "yes" },
         ],
       },
       {
@@ -173,7 +189,7 @@ try {
     }
   );
 
-  downloadProject(result);
+  downloadProject(folder, result);
 } catch (e) {
   if (e?.message == "Cancel") {
     console.log("Aborted");
