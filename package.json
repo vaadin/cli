@@ -1,6 +1,6 @@
 {
   "name": "create-vaadin",
-  "version": "3.0.0-pre2",
+  "version": "3.0.0-pre3",
   "type": "module",
   "description": "A CLI for creating Vaadin applications",
   "keywords": [
