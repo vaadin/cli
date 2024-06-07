@@ -21,6 +21,7 @@
     "decompress": "^4.2.1",
     "inquirer": "^9.2.23",
     "node-fetch": "^3.3.2",
+    "prompts": "^2.4.2",
     "simple-git": "^3.24.0"
   },
   "devDependencies": {
