@@ -7,6 +7,11 @@ const decompress = require("decompress");
 const program = require("commander");
 const fetch = require("node-fetch");
 
+console.warn();
+console.warn("@vaadin/cli is deprecated. Use 'npm init vaadin' to create new projects");
+console.warn();
+
+
 program
   .option("--hilla", "Create a project with TypeScript and LitElement views")
   .option("--fusion", "Deprecated. Use --hilla instead")
