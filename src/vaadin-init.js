@@ -5,6 +5,8 @@ import path from "path";
 import decompress from "decompress";
 import fetch from "node-fetch";
 import prompts from "prompts";
+import { findIntelliJ, findCode } from "./ide.js";
+import { spawn } from "child_process";
 
 function deleteFolder(folder) {
   for (const file of fs.readdirSync(folder)) {
@@ -18,7 +20,7 @@ function sanitizePath(path) {
 }
 
 function exists(path) {
-    return fs.existsSync(path);
+  return fs.existsSync(path);
 }
 
 function isEmptyFolder(path) {
@@ -52,7 +54,7 @@ async function downloadProject(folder, options) {
       deleteFolder(folder);
     } else {
       console.error("Folder " + folder + " already exists");
-      return;
+      return false;
     }
   }
 
@@ -67,7 +69,7 @@ async function downloadProject(folder, options) {
           method: "GET",
           "Accept-Encoding": "gzip",
         },
-      }
+      },
     );
     if (!response.ok) {
       if (response.status == 404) {
@@ -75,7 +77,7 @@ async function downloadProject(folder, options) {
       } else {
         console.error("Unable to create project: " + response.status);
       }
-      return;
+      return false;
     }
 
     const body = await response.arrayBuffer();
@@ -91,22 +93,13 @@ async function downloadProject(folder, options) {
       });
     } catch (e) {
       console.error(e);
-      return;
+      return false;
     }
     fs.unlinkSync("temp.zip");
-    console.log("");
-    console.log("Project '" + projectName + "' created");
-    console.log("");
-    console.log(
-      `To run your project, open the ${folder} folder in your IDE and launch the Application class`
-    );
-    console.log("");
-    console.log("You can also run from the terminal using");
-    console.log("- cd " + folder);
-    console.log("- mvn");
-    console.log("");
+    return true;
   } catch (e) {
     console.error("Unable to create project: " + e);
+    return false;
   }
 }
 let result;
@@ -114,6 +107,20 @@ let folder;
 
 try {
   const argProjectName = process.argv.slice(2)?.[0];
+  const codeBinary = await findCode();
+  const intellijBinary = await findIntelliJ();
+
+  const ideChoices = [];
+  if (intellijBinary) {
+    ideChoices.push({ title: "IntelliJ IDEA", value: "idea" });
+  }
+  if (codeBinary) {
+    ideChoices.push({ title: "Visual Studio Code", value: "code" });
+  }
+  if (intellijBinary || codeBinary) {
+    ideChoices.push({ title: "None", value: "none" });
+  }
+
   result = await prompts(
     [
       {
@@ -126,7 +133,8 @@ try {
         },
       },
       {
-        type: () => (exists(folder) && !isEmptyFolder(folder) ? "select" : null),
+        type: () =>
+          exists(folder) && !isEmptyFolder(folder) ? "select" : null,
         name: "overwrite",
         message: () => `Folder ${folder} already exists.`,
         choices: [
@@ -171,15 +179,44 @@ try {
           { title: "Use pre release", value: "pre" },
         ],
       },
+      {
+        type: ideChoices.length > 0 ? "select" : null,
+        name: "open-in-ide",
+        message: "Open project in IDE:",
+        choices: ideChoices,
+      },
     ],
     {
       onCancel: () => {
         throw new Error("Cancel");
       },
-    }
+    },
   );
 
-  downloadProject(folder, result);
+  const ideBinary =
+    result["open-in-ide"] === "idea"
+      ? intellijBinary
+      : result["open-in-ide"] === "code"
+        ? codeBinary
+        : undefined;
+
+  const downloaded = await downloadProject(folder, result);
+  if (downloaded) {
+    console.log("");
+    console.log("Project '" + result.projectName + "' created");
+    console.log("");
+    console.log(
+      `To run your project, open the ${folder} folder in your IDE and launch the Application class`,
+    );
+    console.log("");
+    console.log("You can also run from the terminal using");
+    console.log("- cd " + folder);
+    console.log("- mvn");
+    console.log("");
+    if (ideBinary) {
+      spawn(ideBinary, [folder]);
+    }
+  }
 } catch (e) {
   if (e?.message == "Cancel") {
     console.log("Aborted");
