@@ -214,7 +214,7 @@ try {
     console.log("- mvn");
     console.log("");
     if (ideBinary) {
-      spawn(ideBinary, [folder]);
+      spawn(`"${ideBinary}"`, [folder], { shell: true });
     }
   }
 } catch (e) {

@@ -14,8 +14,8 @@ export async function findIntelliJ() {
     "/usr/local/bin/idea",
   ];
   const windowsIntelliJPaths = [
-    "C:\\Program Files\\JetBrains\\IntelliJ*\\bin\\idea.bat",
-    "C:\\Users\\*\\AppData\\Local\\JetBrains\\IntelliJ*\\bin\\idea.bat",
+    "C:/Program Files/JetBrains/IntelliJ*/bin/idea.bat",
+    "C:/Users/*/AppData/Local/JetBrains/IntelliJ*/bin/idea.bat",
   ];
 
   const candidates = [
@@ -35,8 +35,8 @@ export async function findCode() {
   ];
   const linuxCodePaths = ["/usr/local/bin/code"];
   const windowsCodePaths = [
-    "C:\\Program Files*\\Microsoft VS Code\\bin\\code",
-    "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\bin\\code",
+    "C:/Program Files*/Microsoft VS Code/bin/code",
+    "C:/Users/*/AppData/Local/Programs/Microsoft VS Code/bin/code",
   ];
 
   const candidates = [
