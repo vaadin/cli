@@ -121,6 +121,10 @@ try {
     ideChoices.push({ title: "None", value: "none" });
   }
 
+  if (argProjectName) {
+    folder = sanitizePath(argProjectName);
+  }
+
   result = await prompts(
     [
       {
@@ -199,6 +203,10 @@ try {
       : result["open-in-ide"] === "code"
         ? codeBinary
         : undefined;
+
+  if (argProjectName) {
+    result.projectName = argProjectName;
+  }
 
   const downloaded = await downloadProject(folder, result);
   if (downloaded) {
