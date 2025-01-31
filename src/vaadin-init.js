@@ -87,9 +87,10 @@ async function downloadProject(folder, options) {
         strip: 1,
         // workaround for https://github.com/kevva/decompress/issues/46
         filter: (file) =>
-          file.type !== "directory" &&
-          !file.path.endsWith(path.sep) &&
-          file.data.length !== 0,
+          (file.type !== "directory" &&
+            !file.path.endsWith(path.sep) &&
+            file.data.length !== 0) ||
+          file.path.endsWith("styles.css"),
       });
     } catch (e) {
       console.error(e);
