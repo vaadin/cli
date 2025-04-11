@@ -28,23 +28,20 @@ function isEmptyFolder(path) {
 }
 async function downloadProject(folder, options) {
   const { projectName } = options;
-  const presets = ["base"];
+  const downloadParameters = [`artifactId=${projectName}`, "ref=cli"];
   if (options.exampleViews === "flow") {
-    presets.push("partial-flow-example-views");
+    downloadParameters.push("frameworks=flow");
   } else if (options.exampleViews === "hilla") {
-    presets.push("partial-hilla-example-views");
+    downloadParameters.push("frameworks=hilla");
   } else if (options.exampleViews === "hilla-flow") {
-    presets.push("partial-flow-example-views");
-    presets.push("partial-hilla-example-views");
+    downloadParameters.push("frameworks=flow");
+    downloadParameters.push("frameworks=hilla");
   }
 
   for (const feature of options.features) {
     if (feature === "pre") {
-      presets.push("partial-prerelease");
-      continue;
+      downloadParameters.push("platformVersion=pre");
     }
-
-    presets.push(`partial-${feature}`);
   }
 
   if (exists(folder)) {
@@ -58,18 +55,16 @@ async function downloadProject(folder, options) {
     }
   }
 
-  const preset = presets.map((p) => `preset=${p}`).join("&");
-
   try {
     const response = await fetch(
-      `https://start.vaadin.com/dl?${preset}&projectName=${projectName}`,
+      `https://start.vaadin.com/skeleton?${downloadParameters.join("&")}`,
       {
         headers: {
           "User-Agent": `Vaadin CLI`,
           method: "GET",
           "Accept-Encoding": "gzip",
         },
-      },
+      }
     );
     if (!response.ok) {
       if (response.status == 404) {
@@ -176,13 +171,7 @@ try {
         type: "multiselect",
         name: "features",
         message: "Features:",
-        choices: [
-          { title: "Login/logout and access control", value: "auth" },
-          { title: "Include JPA support", value: "db" },
-          { title: "Kubernetes configuration", value: "kubernetes" },
-          { title: "Dockerfile", value: "docker" },
-          { title: "Use pre release", value: "pre" },
-        ],
+        choices: [{ title: "Use pre release", value: "pre" }],
       },
       {
         type: ideChoices.length > 0 ? "select" : null,
@@ -195,15 +184,15 @@ try {
       onCancel: () => {
         throw new Error("Cancel");
       },
-    },
+    }
   );
 
   const ideBinary =
     result["open-in-ide"] === "idea"
       ? intellijBinary
       : result["open-in-ide"] === "code"
-        ? codeBinary
-        : undefined;
+      ? codeBinary
+      : undefined;
 
   if (argProjectName) {
     result.projectName = argProjectName;
@@ -215,7 +204,7 @@ try {
     console.log("Project '" + result.projectName + "' created");
     console.log("");
     console.log(
-      `To run your project, open the ${folder} folder in your IDE and launch the Application class`,
+      `To run your project, open the ${folder} folder in your IDE and launch the Application class`
     );
     console.log("");
     console.log("You can also run from the terminal using");
