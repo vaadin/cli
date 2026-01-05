@@ -31,11 +31,6 @@ async function downloadProject(folder, options) {
   const downloadParameters = [`artifactId=${projectName}`, "ref=cli"];
   if (options.exampleViews === "flow") {
     downloadParameters.push("frameworks=flow");
-  } else if (options.exampleViews === "hilla") {
-    downloadParameters.push("frameworks=hilla");
-  } else if (options.exampleViews === "hilla-flow") {
-    downloadParameters.push("frameworks=flow");
-    downloadParameters.push("frameworks=hilla");
   }
 
   for (const feature of options.features) {
@@ -159,11 +154,9 @@ try {
       {
         type: "select",
         name: "exampleViews",
-        message: "Example views:",
+        message: "Example view:",
         choices: [
-          { title: "Flow (Java)", value: "flow" },
-          { title: "Hilla (React + TypeScript)", value: "hilla" },
-          { title: "Flow and Hilla", value: "hilla-flow" },
+          { title: "Task List", value: "flow" },
           { title: "None", value: "none" },
         ],
       },
